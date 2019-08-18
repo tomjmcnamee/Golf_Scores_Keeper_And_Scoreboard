@@ -77,7 +77,7 @@ class GolferApp
         Golfer.all.each { |golfer| counter += 1; golfer_hash[counter] = golfer.name }
         golfer_hash.each { |tempnumber, golfername| puts "#{tempnumber}:  #{golfername}"}
 
-    #The following lines 
+    # UNTIL statement to retry gathering input until the user makes a valid selection      
         selection_number = 0
         until selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
           puts "Which player's scorecard would you like to see?  Submit their corrosponding NUMBER"
@@ -93,7 +93,7 @@ class GolferApp
         end  # ends until loop about valid player number
       else
   # If statement to reject invalid top_menu selections and delay acting on a top_menu 'exit' selection
-  # This optoin cant be a typical case "when" condition since all other "When"s are integers
+  # This option cant be a typical case "when" condition since the only valid selections are integers
         if topmenu_response.downcase == "exit"
         else
           puts "'#{topmenu_response}' is not a valid selection!"
