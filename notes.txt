@@ -1,0 +1,63 @@
+
+
+Models:  Golfer, Hole, Score
+
+golfer has many holes through score
+score has many golfers through score
+
+
+------------Migration #1 -----------------------------------------
+class CreateGolfers < ActiveRecord::Migration[5.2]
+  def change
+    create_table :golfers do |t|
+      t.string :name
+      t.integer :age
+      t.integer :player_handicap
+    end  # end create_table loop
+  end  # end change method
+end
+
+--------END migration #1 -----------
+
+
+class CreateHoles < ActiveRecord::Migration[5.2]
+  def change
+    create_table :holes do |t|
+      t.ingeger :hole_number
+      t.integer :course_id
+      t.integer :distance
+      t.integer :hole_handicap
+    end  # end create_table loop
+  end
+end
+
+
+
+class CreateScoress < ActiveRecord::Migration[5.2]
+  def change
+    create_table :scores do |t|
+      t.integer :golfer_id
+      t.integer :hole_id
+      t.integer :score
+    end  # end create_table loop
+  end
+
+
+
+CLI Commands
+
+rake db:create_migration NAME=create_golfers - done
+rake db:create_migration NAME=create_holes - done
+rake db:create_migration NAME=create_scores - done
+rake db:create_migration NAME=create_courses - done
+
+<edit db/migrate/ files to fill out change methods
+
+rake db:migrate
+
+<edit app/models rb files to estqblish the classes inheriting ActiveRecord::Migrate[5.2]
+
+
+
+
+

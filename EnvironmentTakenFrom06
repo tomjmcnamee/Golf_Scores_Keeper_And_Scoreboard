@@ -1,0 +1,7 @@
+Environment taken from this lab
+
+https://learn.co/tracks/module-1-web-development-immersive-2-1/orms-and-active-record/activerecord/activerecord-crud-lab
+
+Which might require these types of commands
+
+"After your migration is ready run rake db:migrate to migrate your table and rake db:migrate SINATRA_ENV=test to migrate a test database"
