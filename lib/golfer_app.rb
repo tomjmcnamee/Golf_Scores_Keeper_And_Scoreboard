@@ -1,4 +1,4 @@
-
+require 'pry'
 class GolferApp
 
   ## The below line hides all DB Call details
@@ -10,16 +10,20 @@ class GolferApp
 # The following 2 lines make the app run until the user chooses to 'exit'
     topmenu_response = ""
     until topmenu_response.downcase == "exit" do
+
+
       
 # Primary Menu of choices presented to the user      
       puts "\n Select from the below:"
-      puts "1 - see total score for a single player"
+      puts "1 - See total score for a single player"
       puts "2 - See ALL scores"
-      puts "3 - see the WINNING player and stroke count"
-      puts "4 - see the biggest LOSER and stroke count"
-      puts "5 - see players scorecard"
+      puts "3 - See the WINNING player and stroke count"
+      puts "4 - See the biggest LOSER and stroke count"
+      puts "5 - See players scorecard"
       puts "6 - Create a new Golfer record for yourself"
-      puts "7 - add your scores"
+      puts "7 - Add your scores"
+      puts "8 - Modify a score"
+      puts "9 - Delete a Golfer record"
       puts "or type 'exit'"
 
 # Accepts user's choice from first menu
@@ -29,32 +33,19 @@ class GolferApp
 # Case statement to act on their choice
       case topmenu_response.to_i
       when 1
-# The following 4 lines lists player names with TEMPORARY number ids (from which the 
-# app user will make their selection), then builds a hash with
-# those temp IDs as keys, and corrosponing Golfer Objects as values
-        counter = 0
-        golfer_hash = {}
-        Golfer.all.each { |golfer| counter += 1; golfer_hash[counter] = golfer.name }
-        golfer_hash.each { |tempnumber, golfername| puts "#{tempnumber}:  #{golfername}"}
+        golfer_hash = Golfer.print_list_of_valid_golfers(Golfer.all)
+        
+        puts "Which player's score would you like to see?  Submit their corrosponding NUMBER"
+        selection_number = gets.chomp    
 
-        # UNTIL statement to retry gathering input until the user makes a valid selection      
-        selection_number = 0
-        until selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-          puts "Which player's score would you like to see?  Submit their corrosponding NUMBER"
-          selection_number = gets.chomp
-          selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
-      
-          
-          #IF statement to reject invalid selections
-          if selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-            puts "------------#{selection_obj.name}'s total score was #{Golfer.total_score_by_player(selection_obj.id)}----."
-          else
-            puts "'#{selection_number}' is not a valid selection, try again."
-          end  # ends if statement about valid player number
-        end  # ends until loop about valid player number
-      
-      
-      
+        while selection_number.to_i <= 0 || selection_number.to_i > golfer_hash.length do
+          puts "'#{selection_number}' is not a valid selection, try again."
+          selection_number = gets.chomp 
+        end  # Ends "WHILE input is invalid" loop
+
+        selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+        puts "------------#{selection_obj.name}'s total score was #{Golfer.total_score_by_player(selection_obj.id)}----."
+    
       when 2
         Golfer.all.each { |golfer| puts "#{golfer.id}:  #{golfer.name} shot a #{Golfer.total_score_by_player(golfer.id)}"}
       
@@ -71,28 +62,19 @@ class GolferApp
 
 
       when 5
-    # The following 4 lines lists player names with TEMPORARY number ids from which the 
-    # app user will make their selection, then builds a hash with
-    # those temp IDs as keys, and corrosponing Golfer Objects as values
-        counter = 0
-        golfer_hash = {}
-        Golfer.all.each { |golfer| counter += 1; golfer_hash[counter] = golfer.name }
-        golfer_hash.each { |tempnumber, golfername| puts "#{tempnumber}:  #{golfername}"}
+        golfer_hash = Golfer.print_list_of_valid_golfers(Golfer.all)
 
-    # UNTIL statement to retry gathering input until the user makes a valid selection      
-        selection_number = 0
-        until selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-          puts "Which player's scorecard would you like to see?  Submit their corrosponding NUMBER"
+        puts "Which player's scorecard would you like to see?  Submit their corrosponding NUMBER"
+        selection_number = gets.chomp
+
+        #Below makes the user resubmit option if they didnt make valid selection
+        while selection_number.to_i <= 0 || selection_number.to_i > golfer_hash.length do
+          puts "'#{selection_number}' is not a valid selection, try again."
           selection_number = gets.chomp
-          selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
-      
-          #IF statement to reject invalid selections
-          if selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-            Score.hole_details_with_player_strokes(selection_obj.id)
-          else
-            puts "'#{selection_number}' is not a valid selection, try again."
-          end  # Ends if statement to reject invalid selection
-        end  # ends until loop about valid player number
+        end
+        
+        selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+        Score.hole_details_with_player_strokes(selection_obj.id)
 
       when 6
         puts "Great!  Lets get you added!  ...but first, lets make sure you aren't already registered."
@@ -101,47 +83,90 @@ class GolferApp
         puts "What is your age (whole numbers only)?"
           new_user_age = gets.chomp.to_i
         Golfer.create_user(new_user_name, new_user_age)
-        Puts "Success!  You are registered!"
+        puts "Success!  You are registered!"
         
 
       when 7
-        counter = 0
-        golfer_hash = {}
-        Golfer.all.each { |golfer| counter += 1; golfer_hash[counter] = golfer.name }
-        golfer_hash.each { |tempnumber, golfername| puts "#{tempnumber}:  #{golfername}"}
 
-        # UNTIL statement to retry gathering input until the user makes a valid selection      
-        selection_number = 0
-        until selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-          puts "Submit the NUMBER next to your name"
+        golfer_hash = Golfer.print_list_of_valid_golfers(Golfer.all)
+       
+        puts "Submit the NUMBER next to your name"
+        selection_number = gets.chomp
+
+        while selection_number.to_i <= 0 || selection_number.to_i > golfer_hash.length do
+          puts "'#{selection_number}' is not a valid selection, try again."
           selection_number = gets.chomp
-          selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
-      
+        end  # ends while loop to make user try again to submit a valid option
           
-          #IF statement to reject invalid selections
-          if selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
-            Golfer.add_scores(selection_obj)
-            puts "Total score for the round: #{Golfer.total_score_by_player(selection_obj.id)}"
-          else
-            puts "'#{selection_number}' is not a valid selection, try again."
-          end  # ends if statement about valid player number
-        end  # ends until loop about valid player number
+          selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+          Golfer.add_scores(selection_obj)
+          puts "Total score for the round: #{Golfer.total_score_by_player(selection_obj.id)}"
+          
+      
+      when 8
+ 
+        golfer_hash = Golfer.print_list_of_valid_golfers(Golfer.all)
+
+        puts "Submit the NUMBER next to your name"
+        selection_number = gets.chomp
+
+        while selection_number.to_i <= 0 || selection_number.to_i > golfer_hash.length do
+          puts "'#{selection_number}' is not a valid selection, try again."
+          selection_number = gets.chomp
+        end  # ends while loop to make user try again to submit a valid option
+          
+        selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+
+        counter = 0
+        score_hash = {}
+        score_selection_objs = selection_obj.scores
+        score_selection_objs.each { |score| counter += 1; score_hash[counter] = score.id } 
+        
+        # Prints all the selected users scores with corrosponding temporary identifier
+        score_hash.each { |tempid,scoreid|  puts "#{tempid}: Hole number #{selection_obj.scores.find(scoreid).hole.hole_number}, current score is #{score_selection_objs.find(scoreid).strokes}"}
+        
+        puts "Submit the LINE NUMBER of the score you'd like to change"
+        score_selection_number = gets.chomp
+
+        while score_selection_number.to_i <= 0 || score_selection_number.to_i > score_hash.length
+          puts "'#{score_selection_number}' is not a valid selection, try again."
+          score_selection_number = gets.chomp
+        end  # ends while loop to make user picked a valid score to change
+
+        score_obj_to_change = score_selection_objs.find(score_hash[score_selection_number.to_i])
+        
+        puts "Current stroke count = #{score_obj_to_change.strokes}"
+        puts "What would you like to change this to?"
+        new_stroke_count = gets.chomp.to_i
+
+        Score.change_and_save_score(score_selection_objs,score_hash,score_selection_number,new_stroke_count)
 
 
+      when 9  # Top menu response = "Delete a Golfer record"
+        golfer_hash = Golfer.print_list_of_valid_golfers(Golfer.all)
+        
+        puts "Which Golfer Record would you like to delete?  Submit their corrosponding NUMBER"
+        selection_number = gets.chomp
 
+        while selection_number.to_i <= 0 || selection_number.to_i > golfer_hash.length do
+          puts "'#{selection_number}' is not a valid selection, try again."  
+          selection_number = gets.chomp
+        end  ## Ends While loop for correct selection
+        
+        selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+    
+        Golfer.delete_golfer_and_scores(selection_obj)
+      
+      
 
-
-
-
-
-      else
+      else  #ELSE FOR CASE STATEMENT
   # If statement to reject invalid top_menu selections and delay acting on a top_menu 'exit' selection
   # This option cant be a typical case "when" condition since the only valid selections are integers
         if topmenu_response.downcase == "exit"
         else
           puts "'#{topmenu_response}' is not a valid selection!"
         end  # ends if statement
-      end  # ends case loop
+      end  # ends CASE STATEMENT
   # If statement to retain top_menu 'exit' selection or ask user if they want to restart
       if 
         topmenu_response.downcase == "exit"
@@ -153,9 +178,6 @@ class GolferApp
 # User chooses to exit the application 
     puts "\n Goodbye! \n" 
   end  # ends call method
-
-
-  
 
 
   
