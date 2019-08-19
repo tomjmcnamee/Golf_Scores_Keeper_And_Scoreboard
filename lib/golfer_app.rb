@@ -18,6 +18,8 @@ class GolferApp
       puts "3 - see the WINNING player and stroke count"
       puts "4 - see the biggest LOSER and stroke count"
       puts "5 - see players scorecard"
+      puts "6 - Create a new Golfer record for yourself"
+      puts "7 - add your scores"
       puts "or type 'exit'"
 
 # Accepts user's choice from first menu
@@ -91,6 +93,47 @@ class GolferApp
             puts "'#{selection_number}' is not a valid selection, try again."
           end  # Ends if statement to reject invalid selection
         end  # ends until loop about valid player number
+
+      when 6
+        puts "Great!  Lets get you added!  ...but first, lets make sure you aren't already registered."
+        puts "What is your name? "
+          new_user_name = gets.chomp
+        puts "What is your age (whole numbers only)?"
+          new_user_age = gets.chomp.to_i
+        Golfer.create_user(new_user_name, new_user_age)
+        Puts "Success!  You are registered!"
+        
+
+      when 7
+        counter = 0
+        golfer_hash = {}
+        Golfer.all.each { |golfer| counter += 1; golfer_hash[counter] = golfer.name }
+        golfer_hash.each { |tempnumber, golfername| puts "#{tempnumber}:  #{golfername}"}
+
+        # UNTIL statement to retry gathering input until the user makes a valid selection      
+        selection_number = 0
+        until selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
+          puts "Submit the NUMBER next to your name"
+          selection_number = gets.chomp
+          selection_obj = Golfer.find_by(name: golfer_hash[selection_number.to_i])
+      
+          
+          #IF statement to reject invalid selections
+          if selection_number.to_i > 0 && selection_number.to_i <= golfer_hash.length
+            Golfer.add_scores(selection_obj)
+            puts "Total score for the round: #{Golfer.total_score_by_player(selection_obj.id)}"
+          else
+            puts "'#{selection_number}' is not a valid selection, try again."
+          end  # ends if statement about valid player number
+        end  # ends until loop about valid player number
+
+
+
+
+
+
+
+
       else
   # If statement to reject invalid top_menu selections and delay acting on a top_menu 'exit' selection
   # This option cant be a typical case "when" condition since the only valid selections are integers

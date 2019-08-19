@@ -20,4 +20,14 @@ class Score < ActiveRecord::Base
     end  #ends each
   end #  ends self.hole_details_with_player_strokes
 
+  def self.add_score_for_user(user, hole, stroke_ct)
+      new_score = Score.new
+      new_score.golfer_id = user.id 
+      new_score.hole_id = hole 
+      new_score.strokes = stroke_ct
+      new_score.save
+  end # ends add_score_to_user method
+
+  
+
 end  # end Score class
