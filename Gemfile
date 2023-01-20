@@ -4,7 +4,7 @@ source "https://rubygems.org"
 # gem "rails"
 
 gem 'sinatra'
-gem 'activerecord', '~>5.2.3'
+gem 'activerecord', '~>6.1.7'
 gem 'sinatra-activerecord'
 gem 'rake'
 gem 'require_all'
